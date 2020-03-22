@@ -39,6 +39,7 @@ websocket.onmessage = function (event) {
 
 var config = {
     // canvas: document.getElementById('game-canvas'),
+    parent: 'phaser-container',
     type: Phaser.AUTO,
     width: 770,
     height: 770,
