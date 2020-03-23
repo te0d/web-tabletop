@@ -9,14 +9,6 @@ logging.basicConfig()
 
 STATE = {
     "value": 0,
-    "green": {
-        "x": 32 + (64 * 1),
-        "y": 32 + (64 * 1),
-    },
-    "blue": {
-        "x": 32 + (64 * 3),
-        "y": 32 + (64 * 2),
-    },
 }
 
 USERS = set()
@@ -66,6 +58,8 @@ async def counter(websocket, path):
                 await notify_state()
             elif data["action"] == "move":
                 STATE[data["token"]] = data["target"]
+                await notify_state()
+            elif data["action"] == "ping":
                 await notify_state()
             else:
                 logging.error("unsupported event: {}", data)

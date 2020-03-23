@@ -1,11 +1,11 @@
-var minus = document.querySelector('.minus'),
+let minus = document.querySelector('.minus'),
     plus = document.querySelector('.plus'),
     value = document.querySelector('.value'),
     users = document.querySelector('.users'),
+    addGreenButton = document.querySelector('#addGreenButton'),
+    addBlueButton = document.querySelector('#addBlueButton'),
     websocket = new WebSocket("ws://192.168.1.19:6789/");
     // websocket = new WebSocket("ws://127.0.0.1:6789/");
-
-var initGreen, initBlue;
 
 minus.onclick = function (event) {
     websocket.send(JSON.stringify({action: 'minus'}));
@@ -20,14 +20,25 @@ websocket.onmessage = function (event) {
     switch (data.type) {
         case 'state':
             value.textContent = data.value;
-            if (initGreen) {
-                moveToken('green', data.green);
-                moveToken('blue', data.blue);
+
+            const scene = game.scene.scenes[0];
+            if (!scene) {
+                break;
             }
-            else {
-                initGreen = data.green;
-                initBlue = data.blue;
-            }
+
+            let re = RegExp('^token\d*');
+            let tokenNames = Object.keys(data).filter((k) => re.test(k));
+            tokenNames.forEach((name) => {
+                const token = scene.children.getByName(name);
+                if (token) {
+                    token.x = data[name].x;
+                    token.y = data[name].y;
+                }
+                else {
+                    generateToken(scene, data[name].x, data[name].y, data[name].color, name)
+                }
+            });
+
             break;
         case 'users':
             users.textContent = (data.count.toString() + " user" + (data.count == 1 ? "" : "s"));
@@ -37,48 +48,60 @@ websocket.onmessage = function (event) {
     }
 };
 
-var config = {
-    // canvas: document.getElementById('game-canvas'),
+addGreenButton.onclick = function (event) {
+    const scene = game.scene.scenes[0];
+    const greenToken = generateToken(scene, 32, 32, 0x00ff00);
+};
+
+addBlueButton.onclick = function (event) {
+    const scene = game.scene.scenes[0];
+    const blueToken = generateToken(scene, 96, 32, 0x0000ff);
+};
+
+let config = {
     parent: 'phaser-container',
     type: Phaser.AUTO,
-    width: 770,
-    height: 770,
+    width: 900,
+    height: 900,
     scene: {
         create: create
     }
 };
 
-var game = new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+let tokenCounter = 0;   // TODO:  make better
 
 function create ()
 {
-    var grid = this.add.grid(385, 385, 768, 768, 64, 64, 0xff0000, 1);
-
-    if (initGreen) {
-        var greenToken = generateToken(this, initGreen.x, initGreen.y, 0x00ff00, 'green');
-        var blueToken = generateToken(this, initBlue.x, initBlue.y, 0x0000ff, 'blue');
+    // create the gameboard
+    const grid = this.add.grid(450, 450, 768, 768, 64, 64, 0xff0000, 1);
+    let wsState = websocket.readyState;
+    if (wsState == websocket.OPEN) {
+        websocket.send(JSON.stringify({action: 'ping'}))
     }
     else {
-        var greenToken = generateToken(this, 32, 32, 0x00ff00, 'green');
-        var blueToken = generateToken(this, 96, 96, 0x0000ff, 'blue');
+        websocket.onopen = () => {websocket.send(JSON.stringify({action: 'ping'}))};
     }
 }
 
-function generateToken(scene, x, y, color, name)
+function generateToken(scene, x, y, color, name=null)
 {
-    var token = scene.add.ellipse(x, y, 60, 60, color, 1);
+    let token = scene.add.ellipse(x, y, 60, 60, color, 1);
+    while (!name) {
+        let potential = 'token' + tokenCounter++;
+        let existing = scene.children.getByName(potential);
+        if (!existing) {
+            name = potential;
+        }
+    }
     token.name = name;
     token.setInteractive();
     scene.input.setDraggable(token);
+    websocket.send(JSON.stringify({action: 'move', token: name, target: {x: x, y: y, color: color}}));
     token.on('drag', function (pointer, dragX, dragY) {
         token.x = dragX;
         token.y = dragY;
-        websocket.send(JSON.stringify({action: 'move', token: token.name, target: {x: dragX, y: dragY}}));
+        websocket.send(JSON.stringify({action: 'move', token: token.name, target: {x: dragX, y: dragY, color: color}}));
     });
-}
-
-function moveToken(name, target) {
-    const token = game.scene.scenes[0].children.getByName(name);    // sexy
-    token.x = target.x;
-    token.y = target.y;
 }

@@ -2,7 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- This line screws up mobile in the app's current state. Taking it out shows the whole canvas, so good enough for now. -->
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
 
         <title>Tabletop</title>
 
@@ -11,9 +12,9 @@
         <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
     </head>
     <body>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-9">
+                <div id="game-area" class="col-lg-9">
                     <div class="buttons">
                         <div class="minus button">-</div>
                         <div class="value">?</div>
@@ -24,14 +25,12 @@
                     </div>
                     <div id="phaser-container">
                     </div>
-                    <!--
-                        <div id="game-canvas">
-                        </div>
-                    -->
                 </div>
 
-                <div class="col-lg-3">
+                <div id="sidebar" class="col-lg-3">
                     <h1>Thsi is Table</h1>
+                    <button id="addGreenButton" type="button" class="btn btn-success m-3">Add Green Token</button>
+                    <button id="addBlueButton" type="button" class="btn btn-primary m-3">Add Blue Token</button>
                 </div>
             </div>
         </div>
