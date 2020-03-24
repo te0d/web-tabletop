@@ -29,8 +29,53 @@
 
                 <div id="sidebar" class="col-lg-3">
                     <h1>Thsi is Table</h1>
-                    <button id="addGreenButton" type="button" class="btn btn-success m-3">Add Green Token</button>
-                    <button id="addBlueButton" type="button" class="btn btn-primary m-3">Add Blue Token</button>
+
+                    <form id="create-token-form">
+                        <div class="form-group">
+                            <label for="shapeSelect">Shape</label>
+                            <select id="shapeSelect" class="form-control">
+                                <option>circle</option>
+                                <option>triangle</option>
+                                <option>horizrectangle</option>
+                                <option>vertrectangle</option>
+                                <option>star</option>
+                                <option>virus</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="colorSelect">Color</label>
+                            <select id="colorSelect" class="form-control">
+                                <option>red</option>
+                                <option>cyan</option>
+                                <option>blue</option>
+                                <option>darkblue</option>
+                                <option>lightblue</option>
+                                <option>purple</option>
+                                <option>yellow</option>
+                                <option>lime</option>
+                                <option>majenta</option>
+                                <option>silver</option>
+                                <option>gray</option>
+                                <option>black</option>
+                                <option>orange</option>
+                                <option>brown</option>
+                                <option>maroon</option>
+                                <option>green</option>
+                                <option>olive</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="depthSelect">Ground</label>
+                            <select id="depthSelect" class="form-control">
+                                <option value="2">fore</option>
+                                <option value="1">back</option>
+                            </select>
+                        </div>
+
+                        <button type="button" id="tokenSubmit" class="btn btn-primary">Create</button>
+                    </form>
                 </div>
             </div>
         </div>
