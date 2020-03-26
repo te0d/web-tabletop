@@ -1,4 +1,15 @@
-const tokenSize = 58;
+// Set some config type stuff
+let websocket;
+
+const containerSize = 900;
+const gridSquareSize = 64;
+const gridSquareCount = 12;
+const gridColor = 0xf5f5dc;
+const gridAlpha = 0;
+const gridLineColor = 0x0;
+const gridLineAlpha = 1;
+const gridSize = gridSquareSize * gridSquareCount;
+const tokenSize = gridSquareSize - 4;
 const colors = {
     "red": 0xff0000,
     "cyan": 0x00ffff,
@@ -20,6 +31,7 @@ const colors = {
     "olive": 0x808000,
 };
 
+// Hook into DOM
 let minus = document.querySelector('.minus'),
     plus = document.querySelector('.plus'),
     value = document.querySelector('.value'),
@@ -27,50 +39,7 @@ let minus = document.querySelector('.minus'),
     shapeSelect = document.querySelector('#shapeSelect'),
     colorSelect = document.querySelector('#colorSelect'),
     depthSelect = document.querySelector('#depthSelect'),
-    tokenSubmit = document.querySelector('#tokenSubmit'),
-    websocket = new WebSocket("ws://192.168.1.19:6789/");
-    // websocket = new WebSocket("ws://127.0.0.1:6789/");
-
-minus.onclick = function (event) {
-    websocket.send(JSON.stringify({action: 'minus'}));
-}
-
-plus.onclick = function (event) {
-    websocket.send(JSON.stringify({action: 'plus'}));
-}
-
-websocket.onmessage = function (event) {
-    data = JSON.parse(event.data);
-    switch (data.type) {
-        case 'state':
-            value.textContent = data.value;
-
-            const scene = game.scene.scenes[0];
-            if (!scene) {
-                break;
-            }
-
-            let re = RegExp('^token\d*');
-            let tokenNames = Object.keys(data).filter((k) => re.test(k));
-            tokenNames.forEach((name) => {
-                const token = scene.children.getByName(name);
-                if (token) {
-                    token.x = data[name].x;
-                    token.y = data[name].y;
-                }
-                else {
-                    generateToken(scene, data[name].x, data[name].y, data[name].shape, data[name].color, data[name].depth, name)
-                }
-            });
-
-            break;
-        case 'users':
-            users.textContent = (data.count.toString() + " user" + (data.count == 1 ? "" : "s"));
-            break;
-        default:
-            console.error("unsupported event", data);
-    }
-};
+    tokenSubmit = document.querySelector('#tokenSubmit');
 
 tokenSubmit.onclick = function (event) {
     const scene = game.scene.scenes[0];
@@ -83,12 +52,12 @@ tokenSubmit.onclick = function (event) {
 let config = {
     parent: 'phaser-container',
     type: Phaser.AUTO,
-    width: 900,
-    height: 900,
+    width: containerSize,
+    height: containerSize,
     scene: {
         preload: preload,
         create: create,
-    }
+    },
 };
 
 const game = new Phaser.Game(config);
@@ -103,11 +72,59 @@ function preload ()
 
 function create ()
 {
-    // create the background
-    const background = this.add.image(450, 450, 'background');
+    // Load the websocket stuff here so images are loaded
+    websocket = new WebSocket("ws://192.168.1.19:6789/");
 
-    // create the gameboard
-    const grid = this.add.grid(450, 450, 768, 768, 64, 64, 0xf5f5dc, 1);
+    minus.onclick = function (event) {
+        websocket.send(JSON.stringify({action: 'minus'}));
+    }
+
+    plus.onclick = function (event) {
+        websocket.send(JSON.stringify({action: 'plus'}));
+    }
+
+    websocket.onmessage = function (event) {
+        data = JSON.parse(event.data);
+        switch (data.type) {
+            case 'state':
+                value.textContent = data.value;
+
+                const scene = game.scene.scenes[0];
+                if (!scene) {
+                    break;
+                }
+
+                let re = RegExp('^token\d*');
+                let tokenNames = Object.keys(data).filter((k) => re.test(k));
+                tokenNames.forEach((name) => {
+                    const token = scene.children.getByName(name);
+                    if (token) {
+                        token.x = data[name].x;
+                        token.y = data[name].y;
+                    }
+                    else {
+                        generateToken(scene, data[name].x, data[name].y, data[name].shape, data[name].color, data[name].depth, name)
+                    }
+                });
+
+                break;
+            case 'users':
+                users.textContent = (data.count.toString() + " user" + (data.count == 1 ? "" : "s"));
+                break;
+            default:
+                console.error("unsupported event", data);
+        }
+    };
+
+    // Create the background
+    const background = this.add.image(containerSize/2, containerSize/2, 'background');
+
+    // Create the gameboard
+    const grid = this.add.grid(containerSize/2, containerSize/2, gridSize, gridSize, gridSquareSize, gridSquareSize, gridColor, gridAlpha, gridLineColor, gridLineAlpha);
+    grid.name = 'gameboard';
+    grid.depth = 1;
+
+    // Request token information
     let wsState = websocket.readyState;
     if (wsState == websocket.OPEN) {
         websocket.send(JSON.stringify({action: 'ping'}))

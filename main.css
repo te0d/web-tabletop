@@ -4,15 +4,15 @@ body {
 }
 
 .buttons {
-    font-size: 4em;
+    font-size: 1em;
     display: flex;
     justify-content: center;
 }
 
 .button, .value {
     line-height: 1;
-    padding: 2rem;
-    margin: 2rem;
+    padding: 1rem;
+    margin: 1rem;
     border: medium solid;
     min-height: 1em;
     min-width: 1em;
@@ -32,13 +32,9 @@ body {
 }
 
 .value {
-    min-width: 2em;
+    min-width: 1em;
 }
 
 .state {
-    font-size: 2em;
-}
-
-canvas {
-    padding: 2rem;
+    font-size: 1em;
 }

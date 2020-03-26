@@ -9,17 +9,12 @@
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="main.css" />
-        <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/phaser@3.22.0/dist/phaser.js"></script>
     </head>
     <body>
         <div class="container-fluid">
             <div class="row">
                 <div id="game-area" class="col-lg-9">
-                    <div class="buttons">
-                        <div class="minus button">-</div>
-                        <div class="value">?</div>
-                        <div class="plus button">+</div>
-                    </div>
                     <div class="state">
                         <span class="users">?</span> online
                     </div>
@@ -28,7 +23,15 @@
                 </div>
 
                 <div id="sidebar" class="col-lg-3">
-                    <h1>Thsi is Table</h1>
+                    <h1>Counter(s)</h1> <!-- now that's what I call futureproofing! -->
+
+                    <div class="buttons">
+                        <div class="minus button">-</div>
+                        <div class="value">?</div>
+                        <div class="plus button">+</div>
+                    </div>
+
+                    <h1 class="mt-5">Create Tokens</h1>
 
                     <form id="create-token-form">
                         <div class="form-group">
@@ -70,7 +73,7 @@
                             <label for="depthSelect">Ground</label>
                             <select id="depthSelect" class="form-control">
                                 <option value="2">fore</option>
-                                <option value="1">back</option>
+                                <option value="0">back</option>
                             </select>
                         </div>
 
