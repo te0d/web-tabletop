@@ -234,8 +234,13 @@ function generateToken(scene, x, y, shape, color, depth=2, name=null)
     scene.input.setDraggable(token);
     websocket.send(JSON.stringify({action: 'move', token: name, target: {x: x, y: y, shape: shape, color: color, depth: depth}}));
     token.on('drag', function (pointer, dragX, dragY) {
-        token.x = dragX;
-        token.y = dragY;
-        websocket.send(JSON.stringify({action: 'move', token: token.name, target: {x: dragX, y: dragY, shape: shape, color: color, depth: depth}}));
+        // Instead of dragX and we use the pointer's world position. Although it causes the token to "center" where the drag started,
+        // it plays well with different zooms and dragging objects while scrolling.
+        let newX = pointer.worldX,
+            newY = pointer.worldY;
+
+        token.x = newX;
+        token.y = newY;
+        websocket.send(JSON.stringify({action: 'move', token: token.name, target: {x: newX, y: newY, shape: shape, color: color, depth: depth}}));
     });
 }
