@@ -1,5 +1,5 @@
 // Set some config type stuff
-let websocket, cursors;
+let websocket, cursors, wasd;
 
 const canvasSize = 900;
 const gridSquareSize = 64;
@@ -80,6 +80,13 @@ function create ()
 
     // Setup some input
     cursors = this.input.keyboard.createCursorKeys();
+    wasd = this.input.keyboard.addKeys({
+        up: Phaser.Input.Keyboard.KeyCodes.W,
+        down: Phaser.Input.Keyboard.KeyCodes.S,
+        left: Phaser.Input.Keyboard.KeyCodes.A,
+        right: Phaser.Input.Keyboard.KeyCodes.D,
+    });
+
     this.cameras.main.setBounds(0, 0, fieldSize, fieldSize);
     this.cameras.main.zoom = 0.5;
 
@@ -155,19 +162,20 @@ function update ()
         cam.zoomTo(newZoom);
     }
 
-    if (cursors.left.isDown)
+    if (cursors.left.isDown || wasd.left.isDown)
     {
         cam.scrollX -= speed;
     }
-    else if (cursors.right.isDown)
+    else if (cursors.right.isDown || wasd.right.isDown)
     {
         cam.scrollX += speed;
     }
-    else if (cursors.up.isDown)
+
+    if (cursors.up.isDown || wasd.up.isDown)
     {
         cam.scrollY -= speed;
     }
-    else if (cursors.down.isDown)
+    else if (cursors.down.isDown || wasd.down.isDown)
     {
         cam.scrollY += speed;
     }
