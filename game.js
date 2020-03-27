@@ -1,14 +1,15 @@
 // Set some config type stuff
-let websocket;
+let websocket, cursors;
 
-const containerSize = 900;
+const canvasSize = 900;
 const gridSquareSize = 64;
-const gridSquareCount = 12;
+const gridSquareCount = 24;
 const gridColor = 0xf5f5dc;
 const gridAlpha = 0;
 const gridLineColor = 0x0;
 const gridLineAlpha = 1;
 const gridSize = gridSquareSize * gridSquareCount;
+const fieldSize = gridSize + 256;
 const tokenSize = gridSquareSize - 4;
 const colors = {
     "red": 0xff0000,
@@ -52,11 +53,13 @@ tokenSubmit.onclick = function (event) {
 let config = {
     parent: 'phaser-container',
     type: Phaser.AUTO,
-    width: containerSize,
-    height: containerSize,
+    width: canvasSize,
+    height: canvasSize,
+    backgroundColor: 0xf5f5dc,
     scene: {
         preload: preload,
         create: create,
+        update: update,
     },
 };
 
@@ -66,7 +69,7 @@ let tokenCounter = 0;   // TODO:  make better
 
 function preload ()
 {
-    this.load.image('background', '/static/plasma.png');
+    // this.load.image('background', '/static/plasma.png');
     this.load.image('virus', '/static/virus.png');
 }
 
@@ -74,6 +77,11 @@ function create ()
 {
     // Load the websocket stuff here so images are loaded
     websocket = new WebSocket("ws://192.168.1.19:6789/");
+
+    // Setup some input
+    cursors = this.input.keyboard.createCursorKeys();
+    this.cameras.main.setBounds(0, 0, fieldSize, fieldSize);
+    this.cameras.main.zoom = 0.5;
 
     minus.onclick = function (event) {
         websocket.send(JSON.stringify({action: 'minus'}));
@@ -117,10 +125,12 @@ function create ()
     };
 
     // Create the background
-    const background = this.add.image(containerSize/2, containerSize/2, 'background');
+    // TODO:  make tileable background with gimp and create texture for bg
+    // note:  canvas texture could also generate gameboards, for say checkers
+    // const background = this.add.image(containerSize/2, containerSize/2, 'background');
 
     // Create the gameboard
-    const grid = this.add.grid(containerSize/2, containerSize/2, gridSize, gridSize, gridSquareSize, gridSquareSize, gridColor, gridAlpha, gridLineColor, gridLineAlpha);
+    const grid = this.add.grid(fieldSize/2, fieldSize/2, gridSize, gridSize, gridSquareSize, gridSquareSize, gridColor, gridAlpha, gridLineColor, gridLineAlpha);
     grid.name = 'gameboard';
     grid.depth = 1;
 
@@ -131,6 +141,35 @@ function create ()
     }
     else {
         websocket.onopen = () => {websocket.send(JSON.stringify({action: 'ping'}))};
+    }
+}
+
+function update ()
+{
+    let cam = this.cameras.main;
+    let speed = cursors.shift.isDown ? 16 : 8;
+
+    if (Phaser.Input.Keyboard.JustDown(cursors.space))
+    {
+        let newZoom = cam.zoom == 1 ? 0.5 : 1;
+        cam.zoomTo(newZoom);
+    }
+
+    if (cursors.left.isDown)
+    {
+        cam.scrollX -= speed;
+    }
+    else if (cursors.right.isDown)
+    {
+        cam.scrollX += speed;
+    }
+    else if (cursors.up.isDown)
+    {
+        cam.scrollY -= speed;
+    }
+    else if (cursors.down.isDown)
+    {
+        cam.scrollY += speed;
     }
 }
 
