@@ -1,5 +1,5 @@
 // Set some config type stuff
-let websocket, cursors, wasd;
+let websocket, cursors, wasd, distanceText;
 
 const canvasSize = 900;
 const gridSquareSize = 64;
@@ -85,10 +85,15 @@ function create ()
         down: Phaser.Input.Keyboard.KeyCodes.S,
         left: Phaser.Input.Keyboard.KeyCodes.A,
         right: Phaser.Input.Keyboard.KeyCodes.D,
+        ctrl: Phaser.Input.Keyboard.KeyCodes.CTRL,
     });
 
     this.cameras.main.setBounds(0, 0, fieldSize, fieldSize);
     this.cameras.main.zoom = 0.5;
+
+    distanceText = this.add.text(10, 10).setScrollFactor(0).setFontSize(64).setColor('#ff00ff').setText('Distance: 0');
+    distanceText.depth = 3;
+
 
     minus.onclick = function (event) {
         websocket.send(JSON.stringify({action: 'minus'}));
@@ -236,11 +241,24 @@ function generateToken(scene, x, y, shape, color, depth=2, name=null)
     token.on('drag', function (pointer, dragX, dragY) {
         // Instead of dragX and we use the pointer's world position. Although it causes the token to "center" where the drag started,
         // it plays well with different zooms and dragging objects while scrolling.
-        let newX = pointer.worldX,
-            newY = pointer.worldY;
+        let newX = wasd.ctrl.isDown ? token.input.dragStartX : pointer.worldX;
+        let newY = wasd.ctrl.isDown ? token.input.dragStartY : pointer.worldY;
 
-        token.x = newX;
-        token.y = newY;
-        websocket.send(JSON.stringify({action: 'move', token: token.name, target: {x: newX, y: newY, shape: shape, color: color, depth: depth}}));
+        // Update distance measure from pointer to original token location
+        let deltaX = pointer.worldX - token.input.dragStartX;
+        let deltaY = pointer.worldY - token.input.dragStartY;
+        let distance = Math.sqrt(deltaX**2 + deltaY**2);
+
+        // Show distance in grid squares rounded to a single decimal place
+        let prettyDistance = Math.round(distance/gridSquareSize * 10) / 10;
+        distanceText.setText('Distance: ' + prettyDistance);
+
+        if (token.x != newX || token.y != newY) {
+
+            // Update token on board and server
+            token.x = newX;
+            token.y = newY;
+            websocket.send(JSON.stringify({action: 'move', token: token.name, target: {x: newX, y: newY, shape: shape, color: color, depth: depth}}));
+        }
     });
 }
