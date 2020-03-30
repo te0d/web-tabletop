@@ -12,7 +12,7 @@
         <link rel="stylesheet" type="text/css" href="main.css" />
         <script src="//cdn.jsdelivr.net/npm/phaser@3.22.0/dist/phaser.js"></script>
     </head>
-    <body>
+    <body class="bg-dark text-white">
         <div class="container-fluid">
             <div class="row">
                 <div id="game-area" class="col-lg-9">
@@ -24,7 +24,9 @@
                 </div>
 
                 <div id="sidebar" class="col-lg-3">
-                    <h1>Counter(s)</h1> <!-- now that's what I call futureproofing! -->
+                    <p><a href="https://bored.blue" class="text-white">https://bored.blue</a></p>
+
+                    <h3>Counter(s)</h3> <!-- now that's what I call futureproofing! -->
 
                     <div class="buttons">
                         <div class="minus button">-</div>
@@ -32,7 +34,7 @@
                         <div class="plus button">+</div>
                     </div>
 
-                    <h1 class="mt-5">Create Tokens</h1>
+                    <h3 class="mt-5">Create Tokens</h3>
 
                     <form id="create-token-form">
                         <div class="form-group">
@@ -51,22 +53,21 @@
                             <label for="colorSelect">Color</label>
                             <select id="colorSelect" class="form-control">
                                 <option>red</option>
+                                <option>orange</option>
+                                <option>yellow</option>
+                                <option>lime</option>
+                                <option>green</option>
+                                <option>olive</option>
                                 <option>cyan</option>
                                 <option>blue</option>
                                 <option>darkblue</option>
-                                <option>lightblue</option>
-                                <option>purple</option>
-                                <option>yellow</option>
-                                <option>lime</option>
                                 <option>majenta</option>
-                                <option>silver</option>
+                                <option>purple</option>
+                                <option>maroon</option>
+                                <option>white</option>
                                 <option>gray</option>
                                 <option>black</option>
-                                <option>orange</option>
                                 <option>brown</option>
-                                <option>maroon</option>
-                                <option>green</option>
-                                <option>olive</option>
                             </select>
                         </div>
 

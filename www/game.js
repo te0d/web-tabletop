@@ -60,7 +60,12 @@ var HudScene = new Phaser.Class({
 
     create: function () {
         // Create text object for distance measure
-        const distanceText = this.add.text(96, 10).setFontSize(24).setColor('#ff00ff').setText('Distance: 0');
+        const distanceText = this.add.text(96, 10)
+            .setFontFamily('"Courier New", sans-serif')
+            .setFontSize(24)
+            .setColor('#ffffff')
+            .setText('Distance: 0')
+            .setShadow(1, 1, '#000000', 2);
 
         // Hook into game objects' drag events to update distance
         const gameboard = this.scene.get('gameboard');
@@ -207,7 +212,7 @@ let config = {
     type: Phaser.AUTO,
     width: canvasSize,
     height: canvasSize,
-    backgroundColor: 0xf5f5dc,
+    backgroundColor: 0xc8c8b4,
     scene: [
         GameboardScene,
         HudScene,
