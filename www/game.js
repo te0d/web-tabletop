@@ -6,11 +6,11 @@ const canvasColor = 0x343a40;
 const gridSquareSize = 64;
 const gridSquareCount = 24;
 const gridColor = 0x6c757d;
-const gridAlpha = 1;
+const gridAlpha = 0.5;
 const gridLineColor = 0x0;
 const gridLineAlpha = 1;
 const gridAltColor = 0x343a40;
-const gridAltAlpha = 1;
+const gridAltAlpha = 0.4;
 const gridSize = gridSquareSize * gridSquareCount;
 const fieldSize = gridSize + 256;
 const tokenSize = gridSquareSize - 7;
@@ -35,7 +35,8 @@ let minus = document.querySelector('.minus'),
     shapeSelect = document.querySelector('#shapeSelect'),
     colorSelect = document.querySelector('#colorSelect'),
     depthSelect = document.querySelector('#depthSelect'),
-    tokenSubmit = document.querySelector('#tokenSubmit');
+    tokenSubmit = document.querySelector('#tokenSubmit'),
+    mapToggle = document.querySelector('#mapToggle');
 
 tokenSubmit.onclick = function (event) {
     const scene = game.scene.scenes[0];
@@ -87,6 +88,7 @@ var GameboardScene = new Phaser.Class({
 
     preload: function () {
         this.load.image('virus', '/static/virus.png');
+        this.load.image('map', '/static/map.jpg');
     },
 
     create: function () {
@@ -112,6 +114,10 @@ var GameboardScene = new Phaser.Class({
 
         plus.onclick = function (event) {
             websocket.send(JSON.stringify({action: 'plus'}));
+        }
+
+        mapToggle.onclick = function (event) {
+            testMap.setAlpha(testMap.alpha == 1 ? 0 : 1);
         }
 
         websocket.onmessage = function (event) {
@@ -154,6 +160,10 @@ var GameboardScene = new Phaser.Class({
             .setAltFillStyle(gridAltColor, gridAltAlpha);
         grid.name = 'gameboard';
         grid.depth = 1;
+
+        // test map
+        const testMap = this.add.image(fieldSize/2, fieldSize/2, 'map');
+        testMap.depth = -1;
 
         // Request token information
         let wsState = websocket.readyState;
