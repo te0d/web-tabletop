@@ -2,34 +2,29 @@
 let websocket, cursors, wasd;
 
 const canvasSize = 900;
+const canvasColor = 0x343a40;
 const gridSquareSize = 64;
 const gridSquareCount = 24;
-const gridColor = 0xf5f5dc;
-const gridAlpha = 0;
+const gridColor = 0x6c757d;
+const gridAlpha = 1;
 const gridLineColor = 0x0;
 const gridLineAlpha = 1;
+const gridAltColor = 0x343a40;
+const gridAltAlpha = 1;
 const gridSize = gridSquareSize * gridSquareCount;
 const fieldSize = gridSize + 256;
-const tokenSize = gridSquareSize - 4;
+const tokenSize = gridSquareSize - 7;
+
 const colors = {
-    "red": 0xff0000,
-    "cyan": 0x00ffff,
-    "blue": 0x0000ff,
-    "darkblue": 0x0000a0,
-    "lightblue": 0xadd8e6,
-    "purple": 0x800080,
-    "yellow": 0xffff00,
-    "lime": 0x00ff00,
-    "majenta": 0xff00ff,
+    "blue": 0x007bff,
+    "purple": 0x6f42c1,
+    "pink": 0xe83e8c,
+    "red": 0xdc3545,
+    "orange": 0xfd7e14,
+    "yellow": 0xffc107,
+    "green": 0x28a745,
     "white": 0xffffff,
-    "silver": 0xc0c0c0,
-    "gray": 0x808080,
     "black": 0x000000,
-    "orange": 0xffa500,
-    "brown": 0xa52a2a,
-    "maroon": 0x800000,
-    "green": 0x008000,
-    "olive": 0x808000,
 };
 
 // Hook into DOM
@@ -91,7 +86,6 @@ var GameboardScene = new Phaser.Class({
     },
 
     preload: function () {
-        // this.load.image('background', '/static/plasma.png');
         this.load.image('virus', '/static/virus.png');
     },
 
@@ -155,13 +149,9 @@ var GameboardScene = new Phaser.Class({
             }
         };
 
-        // Create the background
-        // TODO:  make tileable background with gimp and create texture for bg
-        // note:  canvas texture could also generate gameboards, for say checkers
-        // const background = this.add.image(containerSize/2, containerSize/2, 'background');
-
         // Create the gameboard
-        const grid = this.add.grid(fieldSize/2, fieldSize/2, gridSize, gridSize, gridSquareSize, gridSquareSize, gridColor, gridAlpha, gridLineColor, gridLineAlpha);
+        const grid = this.add.grid(fieldSize/2, fieldSize/2, gridSize, gridSize, gridSquareSize, gridSquareSize, gridColor, gridAlpha, gridLineColor, gridLineAlpha)
+            .setAltFillStyle(gridAltColor, gridAltAlpha);
         grid.name = 'gameboard';
         grid.depth = 1;
 
@@ -212,7 +202,7 @@ let config = {
     type: Phaser.AUTO,
     width: canvasSize,
     height: canvasSize,
-    backgroundColor: 0xc8c8b4,
+    backgroundColor: canvasColor,
     scene: [
         GameboardScene,
         HudScene,
@@ -258,6 +248,11 @@ function generateToken(scene, x, y, shape, color, depth=2, name=null)
             x = x || 96;
             y = y || 32;
             token = scene.add.image(x, y, 'virus');
+    }
+
+    // Set outline color for simple shape tokens
+    if (token.setStrokeStyle) {
+        token.setStrokeStyle(1, gridAltColor, 1);
     }
 
     // If no name provided, generate an unused name
