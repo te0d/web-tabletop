@@ -10,11 +10,10 @@ body {
 }
 
 .button, .value {
-    line-height: 1;
+    line-height: 0.5;
     padding: 1rem;
-    margin: 1rem;
+    margin: 0rem 0.5rem;
     border: medium solid;
-    min-height: 1em;
     min-width: 1em;
 }
 

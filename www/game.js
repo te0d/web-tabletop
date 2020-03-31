@@ -93,7 +93,7 @@ var GameboardScene = new Phaser.Class({
 
     create: function () {
         // Load the websocket stuff here so images are loaded
-        websocket = new WebSocket("ws://192.168.1.19:6789/");
+        websocket = new WebSocket("ws://127.0.0.1:6789/");
 
         // Setup some input
         cursors = this.input.keyboard.createCursorKeys();
