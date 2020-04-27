@@ -1,0 +1,23 @@
+{% extends  'base.html' %}
+
+{% block title %}Create{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div id="cover" class="col-lg-9 align-middle">
+                <h1>Bored.Blue</h1>
+
+                <form method="post">
+                    <label for="name">Name</label>
+                    <input name="name" id="name" value="{{ request.form['name'] }}" required>
+                    <input type="submit" value="Create">
+                </form>
+            </div>
+
+            <div id="sidebar" class="col-lg-3">
+                <p><a href="https://bored.blue" class="text-white">https://bored.blue</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

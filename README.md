@@ -9,17 +9,24 @@ and controlled by users.
 
 Install the `requirements.txt`.
 
-Set up a static web server for the `www` folder.
+Set up the flask environment variables.
+```
+export FLASK_APP=web_tabletop
+export FLASK_ENV=dev
+```
+
+*Being deprecated:*
+*Set up a static web server for the `www` folder.*
 
 ## Usage
 
 Start the python websocket server.
 
-`python syncpeers.py`
+`cd web_tabletop && python syncpeers.py`
 
-Start the web server. For development you can use (within www directory):
+Start the web server. :
 
-`python -m http.server`
+`flask run`
 
 ## Contributing
 

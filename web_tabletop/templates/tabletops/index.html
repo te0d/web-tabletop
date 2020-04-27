@@ -1,0 +1,30 @@
+{% extends  'base.html' %}
+
+{% block title %}Index{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div id="cover" class="col-lg-9 align-middle">
+            <h1>Bored.Blue</h1>
+
+            <ul>
+                {% for tabletop in tabletops %}
+                <li>
+                    {{ tabletop["name"] }} - {{ tabletop["token"] }}
+                    <form action="{{ url_for('tabletops.delete', id=tabletop['id']) }}" method="post">
+                        <input type="submit" value="Delete" onclick="return confirm('You sure?');">
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div id="sidebar" class="col-lg-3">
+            <p><a href="https://bored.blue" class="text-white">https://bored.blue</a></p>
+
+            <p><a href="/create">Create</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
