@@ -55,13 +55,14 @@ var GameboardScene = new Phaser.Class({
     },
 
     preload: function () {
-        this.load.image('virus', '/assets/img/virus.png');
-        this.load.image('map', '/assets/img/map.jpg');
+        this.load.image('virus', '/static/img/virus.png');
+        this.load.image('map', '/static/img/map.jpg');
     },
 
     create: function () {
         // Load the websocket stuff here so images are loaded
-        websocket = new WebSocket("ws://127.0.0.1:6789/");
+        // Identifier used to define connection's related tabletop
+        websocket = new WebSocket("ws://127.0.0.1:6789/" + tabletop_identifier);
 
         // Setup some input
         cursors = this.input.keyboard.createCursorKeys();

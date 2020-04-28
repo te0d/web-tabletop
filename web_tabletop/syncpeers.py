@@ -7,78 +7,89 @@ import websockets
 
 logging.basicConfig()
 
-STATE = {
-    "value": 0,
-}
+TABLETOPS = {}
 
-USERS = set()
+def get_tabletop(id):
+    if not id in TABLETOPS:
+        TABLETOPS[id] = {
+            "value": 0,
+            "tokens": {},
+            "users": set(),
+        }
 
-
-def state_event():
-    return json.dumps({"type": "state", **STATE})
-
-def users_event():
-    return json.dumps({"type": "users", "count": len(USERS)})
-
-def counter_event():
-    return json.dumps({"type": "state", "value": STATE["value"]})
-
-def token_event(name):
-    return json.dumps({"type": "state", name: STATE[name]})
+    return TABLETOPS[id]
 
 
-async def notify_state():
-    if USERS:  # asyncio.wait doesn't accept an empty list
-        message = state_event()
-        await asyncio.wait([user.send(message) for user in USERS])
+def state_event(tabletop):
+    return json.dumps({"type": "state", "value": tabletop["value"], **tabletop["tokens"] })
 
-async def notify_users():
-    if USERS:  # asyncio.wait doesn't accept an empty list
-        message = users_event()
-        await asyncio.wait([user.send(message) for user in USERS])
+def users_event(tabletop):
+    return json.dumps({"type": "users", "count": len(tabletop["users"])})
 
-async def notify_counter():
-    if USERS:
-        message = counter_event()
-        await asyncio.wait([user.send(message) for user in USERS])
+def counter_event(tabletop):
+    return json.dumps({"type": "state", "value": tabletop["value"]})
 
-async def notify_token(name):
-    if USERS:
-        message = token_event(name)
-        await asyncio.wait([user.send(message) for user in USERS])
+def token_event(tabletop, token_id):
+    return json.dumps({"type": "state", token_id: tabletop["tokens"][token_id]})
 
 
-async def register(websocket):
-    USERS.add(websocket)
-    await notify_users()
+async def notify_state(tabletop):
+    if tabletop["users"]:  # asyncio.wait doesn't accept an empty list
+        message = state_event(tabletop)
+        await asyncio.wait([user.send(message) for user in tabletop["users"]])
 
-async def unregister(websocket):
-    USERS.remove(websocket)
-    await notify_users()
+async def notify_users(tabletop):
+    if tabletop["users"]:  # asyncio.wait doesn't accept an empty list
+        message = users_event(tabletop)
+        await asyncio.wait([user.send(message) for user in tabletop["users"]])
 
+async def notify_counter(tabletop):
+    if tabletop["users"]:
+        message = counter_event(tabletop)
+        await asyncio.wait([user.send(message) for user in tabletop["users"]])
+
+async def notify_token(tabletop, token_id):
+    if tabletop["users"]:
+        message = token_event(tabletop, token_id)
+        await asyncio.wait([user.send(message) for user in tabletop["users"]])
+
+
+async def register(websocket, path):
+    tabletop = get_tabletop(path)
+    tabletop["users"].add(websocket)
+    await notify_users(tabletop)
+
+async def unregister(websocket, path):
+    tabletop = get_tabletop(path)
+    tabletop["users"].remove(websocket)
+    await notify_users(tabletop)
 
 async def machine(websocket, path):
-    # register(websocket) sends user_event() to websocket
-    await register(websocket)
+    if not path:
+        logging.error("unsupported message")
+        return
+    else:
+        tabletop = get_tabletop(path)
+
+    await register(websocket, path)
     try:
-        await websocket.send(state_event())
         async for message in websocket:
             data = json.loads(message)
             if data["action"] == "minus":
-                STATE["value"] -= 1
-                await notify_counter()
+                tabletop["value"] -= 1
+                await notify_counter(tabletop)
             elif data["action"] == "plus":
-                STATE["value"] += 1
-                await notify_counter()
+                tabletop["value"] += 1
+                await notify_counter(tabletop)
             elif data["action"] == "move":
-                STATE[data["token"]] = data["target"]
-                await notify_token(data["token"])
+                tabletop["tokens"][data["token"]] = data["target"]
+                await notify_token(tabletop, data["token"])
             elif data["action"] == "ping":
-                await notify_state()
+                await notify_state(tabletop)
             else:
                 logging.error("unsupported event: {}", data)
     finally:
-        await unregister(websocket)
+        await unregister(websocket, path)
 
 
 start_server = websockets.serve(machine, "127.0.0.1", 6789)

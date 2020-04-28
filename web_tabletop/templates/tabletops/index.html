@@ -11,7 +11,10 @@
             <ul>
                 {% for tabletop in tabletops %}
                 <li>
-                    {{ tabletop["name"] }} - {{ tabletop["token"] }}
+                    {{ tabletop["name"] }} -
+                    <a href="/t/{{ tabletop["token"] }}">
+                        {{ tabletop["token"] }}
+                    </a>
                     <form action="{{ url_for('tabletops.delete', id=tabletop['id']) }}" method="post">
                         <input type="submit" value="Delete" onclick="return confirm('You sure?');">
                     </form>
