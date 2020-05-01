@@ -12,22 +12,18 @@ TABLETOPS = {}
 def get_tabletop(id):
     if not id in TABLETOPS:
         TABLETOPS[id] = {
-            "value": 0,
-            "tokens": {},
             "users": set(),
+            "tokens": {},
         }
 
     return TABLETOPS[id]
 
 
 def state_event(tabletop):
-    return json.dumps({"type": "state", "value": tabletop["value"], **tabletop["tokens"] })
+    return json.dumps({"type": "state", **tabletop["tokens"] })
 
 def users_event(tabletop):
     return json.dumps({"type": "users", "count": len(tabletop["users"])})
-
-def counter_event(tabletop):
-    return json.dumps({"type": "state", "value": tabletop["value"]})
 
 def token_event(tabletop, token_id):
     return json.dumps({"type": "state", token_id: tabletop["tokens"][token_id]})
@@ -41,11 +37,6 @@ async def notify_state(tabletop):
 async def notify_users(tabletop):
     if tabletop["users"]:  # asyncio.wait doesn't accept an empty list
         message = users_event(tabletop)
-        await asyncio.wait([user.send(message) for user in tabletop["users"]])
-
-async def notify_counter(tabletop):
-    if tabletop["users"]:
-        message = counter_event(tabletop)
         await asyncio.wait([user.send(message) for user in tabletop["users"]])
 
 async def notify_token(tabletop, token_id):
@@ -75,13 +66,7 @@ async def machine(websocket, path):
     try:
         async for message in websocket:
             data = json.loads(message)
-            if data["action"] == "minus":
-                tabletop["value"] -= 1
-                await notify_counter(tabletop)
-            elif data["action"] == "plus":
-                tabletop["value"] += 1
-                await notify_counter(tabletop)
-            elif data["action"] == "move":
+            if data["action"] == "move":
                 tabletop["tokens"][data["token"]] = data["target"]
                 await notify_token(tabletop, data["token"])
             elif data["action"] == "ping":

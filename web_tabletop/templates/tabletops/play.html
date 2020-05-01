@@ -19,14 +19,6 @@
         <div id="sidebar" class="col-lg-3">
             <p><a href="{{ url_for('index') }}" class="text-white">https://bored.blue</a></p>
 
-            <h3>Counter(s)</h3> <!-- now that's what I call futureproofing! -->
-
-            <div class="buttons">
-                <div class="minus button">-</div>
-                <div class="value">?</div>
-                <div class="plus button">+</div>
-            </div>
-
             <h3 class="mt-4">Create Tokens</h3>
 
             <form id="create-token-form">
@@ -83,6 +75,9 @@
 <script type="text/javascript">
     const tabletop_identifier = "{{ tabletop['token'] }}";
 </script>
-<script src="{{ url_for('static', filename='js/hudscene.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hud_scene.js') }}"></script>
+<script src="{{ url_for('static', filename='js/gameboard_scene.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sync_client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 {% endblock %}
