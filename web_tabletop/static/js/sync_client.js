@@ -24,7 +24,7 @@ class SyncClient {
                     token.y = data[name].y;
                 }
                 else {
-                    generateToken(scene, data[name].x, data[name].y, data[name].shape, data[name].color, data[name].depth, name)
+                    game.token.create(data[name].x, data[name].y, data[name].shape, data[name].color, data[name].depth, name)
                 }
             });
         }

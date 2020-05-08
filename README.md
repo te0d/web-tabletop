@@ -22,7 +22,7 @@ export FLASK_ENV=dev
 
 Start the python websocket server.
 
-`cd web_tabletop && python syncpeers.py`
+`cd web_tabletop && python sync_server.py`
 
 Start the web server. :
 
