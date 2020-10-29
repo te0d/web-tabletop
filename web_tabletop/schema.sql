@@ -5,5 +5,6 @@ CREATE TABLE tabletops (
     token TEXT UNIQUE NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name TEXT
+    name TEXT,
+    game_type TEXT
 );

@@ -1,7 +1,11 @@
+let gridSquareCount = 24;
+if (game_type == "checker") {
+    gridSquareCount = 8;
+}
+
 const canvasSize = 900;
 const canvasColor = 0x343a40;
 const gridSquareSize = 64;
-const gridSquareCount = 24;
 const gridColor = 0x6c757d;
 const gridAlpha = 0.5;
 const gridLineColor = 0x0;

@@ -11,7 +11,7 @@ bp = Blueprint("tabletops", __name__)
 
 def get_tabletop(id):
     tabletop = get_db().execute(
-        "SELECT t.id, t.token, t.name, t.created, t.updated"
+        "SELECT t.id, t.token, t.name, t.game_type, t.created, t.updated"
         " FROM tabletops t"
         " WHERE t.id = ?",
         (id,)
@@ -24,7 +24,7 @@ def get_tabletop(id):
 
 def get_tabletop_by_token(token):
     tabletop = get_db().execute(
-        "SELECT t.id, t.token, t.name, t.created, t.updated"
+        "SELECT t.id, t.token, t.name, t.game_type, t.created, t.updated"
         " FROM tabletops t"
         " WHERE t.token = ?",
         (token,)
@@ -50,12 +50,13 @@ def create():
     if request.method == "POST":
         token = secrets.token_urlsafe(16)
         name = request.form["name"] or token[:6]
+        board_type = request.form["board_type"] or "dnd"
 
         db = get_db()
         db.execute(
-            "INSERT INTO tabletops (token, name)"
-            " VALUES (?, ?)",
-            (token, name)
+            "INSERT INTO tabletops (token, name, game_type)"
+            " VALUES (?, ?, ?)",
+            (token, name, board_type)
         )
         db.commit()
         return redirect(url_for("tabletops.index"))

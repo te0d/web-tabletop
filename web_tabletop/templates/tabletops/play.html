@@ -80,5 +80,10 @@
 <script src="{{ url_for('static', filename='js/gameboard_scene.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sync_client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/token_manager.js') }}"></script>
+
+<script>
+    const game_type = "{{ tabletop['game_type'] }}";
+</script>
+
 <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 {% endblock %}
