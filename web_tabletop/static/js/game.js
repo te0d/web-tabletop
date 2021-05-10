@@ -28,8 +28,9 @@ tokenSubmit.onclick = function (event) {
     const scene = game.scene.scenes[0];
     let shape = UI.createToken.shape.value;
     let color = UI.colors[UI.createToken.color.value];
+    let character = UI.createToken.character.value;
     let depth = UI.createToken.depth.value;
-    game.token.create(null, null, shape, color, depth);
+    game.token.create(null, null, shape, color, depth, character);
 }
 
 const config = {

@@ -3,6 +3,7 @@ const UI = {
     createToken: {
         shape: document.querySelector('#shapeSelect'),
         color: document.querySelector('#colorSelect'),
+        character: document.querySelector('#characterField'),
         depth: document.querySelector('#depthSelect'),
         submit: document.querySelector('#tokenSubmit'),
     },
